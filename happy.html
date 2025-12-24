@@ -3,20 +3,15 @@
 
 <head>
  <meta charset="UTF-8">
-
- <title></title>
-
+ <title>Merry Christmas</title>
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 
  <style>
-  * 
-  {
+  * {
    box-sizing: border-box;
   }
 
-
-  body 
-  {
+  body {
    margin: 0;
    height: 100vh;
    overflow: hidden;
@@ -28,9 +23,7 @@
    font-family: sans-serif;
   }
 
-
-  label
-  {
+  label {
    display: inline-block;
    background-color: #161616;
    padding: 16px;
@@ -43,17 +36,13 @@
    text-align: center;
   }
 
-
-  ul 
-  {
+  ul {
    list-style-type: none;
    padding: 0;
    margin: 0;
   }
 
-
-  .btn
-  {
+  .btn {
    background-color: #161616;
    border-radius: 10px;
    color: #c5a880;
@@ -63,9 +52,14 @@
    margin-bottom: 16px;
    line-height: 1.5;
    cursor: pointer;
+   transition: all 0.3s;
   }
-  .separator
-  {
+  .btn:hover {
+    background-color: #c5a880;
+    color: #161616;
+  }
+
+  .separator {
    font-weight: bold;
    text-align: center;
    width: 300px;
@@ -73,33 +67,74 @@
    color: #a07676;
   }
 
-
-  .title 
-  {
+  .title {
    color: #a07676;
    font-weight: bold;
    font-size: 1.25rem;
    margin-bottom: 16px;
+   text-align: center;
   }
 
-
-  .text-loading 
-  {
+  .text-loading {
    font-size: 2rem;
+  }
+
+  /* --- 新增：祝福文字样式 --- */
+  .greeting-text {
+    position: absolute;
+    top: 15%; /* 调整垂直位置，避免挡住树 */
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none; /* 让鼠标点击穿透文字，不影响背景操作 */
+    opacity: 0; /* 初始隐藏 */
+    transition: opacity 3s ease-in-out; /* 缓慢淡入 */
+    z-index: 10;
+  }
+
+  .greeting-text h1 {
+    margin: 0;
+    font-size: 3.5rem;
+    font-family: "Microsoft YaHei", "SimHei", sans-serif;
+    color: #fff;
+    text-shadow: 
+      0 0 10px #fff,
+      0 0 20px #ff00de,
+      0 0 40px #ff00de,
+      0 0 80px #ff00de;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .greeting-text p {
+    margin: 10px 0 0 0;
+    font-size: 1.5rem;
+    color: #ffeba7;
+    letter-spacing: 5px;
+    font-family: "Microsoft YaHei", sans-serif;
+  }
+
+  .greeting-text.visible {
+    opacity: 1;
+  }
+
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 10px #fff, 0 0 20px #e60073, 0 0 30px #e60073;
+    }
+    to {
+      text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .greeting-text h1 { font-size: 2rem; }
+    .greeting-text p { font-size: 1rem; }
   }
  </style>
 
  <script>
   window.console = window.console || function(t) {};
  </script>
-
- <script>
-  if (document.location.search.match(/type=embed/gi)) {
-   window.parent.postMessage("resize", "*");
-  }
- </script>
-
-
 </head>
 
 <body translate="no" >
@@ -111,9 +146,14 @@
  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 
+ <div id="greeting" class="greeting-text">
+   <h1>圣诞节快乐！</h1>
+   <p>天天开心</p>
+ </div>
+
  <div id="overlay">
   <ul>
-   <li class="title">请选择音乐</li>
+   <li class="title">请选择音乐开启圣诞之旅</li>
    <li>
     <button class="btn" id="btnA" type="button">
      Snowflakes Falling Down by Simon Panrucker
@@ -125,7 +165,7 @@
    <li class="separator">或者</li>
    <li>
     <input type="file" id="upload" hidden />
-    <label for="upload">Upload File</label>
+    <label for="upload">上传本地音乐</label>
    </li>
   </ul>
  </div>
@@ -179,6 +219,14 @@
     function init() {
      const overlay = document.getElementById("overlay");
      overlay.remove();
+
+     // --- 修改点：显示祝福文字 ---
+     const greeting = document.getElementById("greeting");
+     // 延迟一点显示，配合音乐开始
+     setTimeout(() => {
+        greeting.classList.add("visible");
+     }, 1000);
+     // -------------------------
 
      scene = new THREE.Scene();
      renderer = new THREE.WebGLRenderer({ antialias: true });
